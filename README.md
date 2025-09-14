@@ -15,49 +15,65 @@ This task involves creating a dynamic badge system for product variants in a Sho
 
 ## Example Code Snippet
 ```javascript
-(function() {
-  // Create badge
-  const badge = document.createElement("div");
-  badge.id = "variant-badge";
-  Object.assign(badge.style, {
-    position: "absolute",
-    top: "15px",
-    left: "15px",
-    padding: "6px 12px",
-    background: "rgba(0,0,0,0.7)",
-    color: "#fff",
-    fontSize: "14px",
-    fontWeight: "bold",
-    borderRadius: "8px",
-    zIndex: "9999",
-    transition: "opacity 0.3s ease"
-  });
+(function () {
+  const BADGE_ID = "variant-badge";
 
-  // Insert badge into product image container
-  const imgContainer = document.querySelector("img[src*='products']");
-  if (imgContainer && imgContainer.parentElement) {
-    imgContainer.parentElement.style.position = "relative";
-    imgContainer.parentElement.appendChild(badge);
+  function createBadge() {
+    let el = document.getElementById(BADGE_ID);
+    if (!el) {
+      el = document.createElement("div");
+      el.id = BADGE_ID;
+      Object.assign(el.style, {
+        position: "absolute",
+        top: "12px",
+        left: "12px",
+        padding: "6px 14px",
+        borderRadius: "12px",
+        fontSize: "14px",
+        fontWeight: "600",
+        color: "#fff",
+        background: "rgba(0, 0, 0, 0.7)",
+        zIndex: "10",
+        pointerEvents: "none",
+        opacity: "0",
+        transform: "translateY(-5px)",
+        transition: "opacity 300ms ease, transform 300ms ease"
+      });
+    }
+    return el;
   }
 
   function updateBadge() {
-    const selected = document.querySelector("input[type=radio][name^='option']:checked");
-    if (selected) {
-      badge.style.opacity = "0";
-      setTimeout(() => {
-        badge.textContent = selected.value;
-        badge.style.opacity = "1";
-      }, 200);
-    }
+    const variantInput = document.querySelector("input[type=radio][name*='Color']:checked");
+    const ulContainer = document.querySelector(".product__media-list.contains-media");
+    const activeMedia = document.querySelector(".product__media-item.is-active");
+
+    if (!variantInput || !activeMedia) return;
+
+    const variant = variantInput.value;
+    const badge = createBadge();
+    badge.textContent = variant;
+    badge.style.background = variant;
+    badge.style.opacity = "0";
+    badge.style.transform = "translateY(-5px)";
+
+    ulContainer.style.position = "relative";
+    ulContainer.appendChild(badge);
+
+    requestAnimationFrame(() => {
+      badge.style.opacity = "1";
+      badge.style.transform = "translateY(0)";
+    });
   }
-
-  // Initial update
-  updateBadge();
-
-  // Detect changes
   document.addEventListener("change", updateBadge, true);
+
+  updateBadge();
+  console.log("✅ Variant Badge Initialized & Listening for Changes");
 })();
 ```
+The above code you have to add in your Shopify store's theme.liquid file or in a custom JavaScript file that is included in your theme.
+
+
 ## Conclusion
 By following the steps outlined above, you can successfully implement a dynamic variant badge system in your Shopify store. This will enhance the visual appeal of your product listings and improve the overall shopping experience for your customers.
 
